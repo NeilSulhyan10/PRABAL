@@ -8,50 +8,57 @@ const ecoDetailsController = require('../controllers/ecoDetailsController');
 const orderController = require('../controllers/orderController');
 const orderItemsController = require('../controllers/orderItemsController');
 const rewardController = require('../controllers/rewardController');
+const authController = require('../controllers/authController');
 
-// Seller Routes
-router.post('/sellers', sellerController.createSeller);
-router.get('/sellers', sellerController.getAllSellers);
-router.get('/sellers/:id', sellerController.getSellerById);
-router.put('/sellers/:id', sellerController.updateSeller);
-router.delete('/sellers/:id', sellerController.deleteSeller);
+const { authenticate } = require('../middlewares/auth');
+const { authorizeRole } = require('../middlewares/authorizeRole');
 
-// Buyer Routes
-router.post('/buyers', buyerController.createBuyer);
-router.get('/buyers', buyerController.getAllBuyers);
-router.get('/buyers/:id', buyerController.getBuyerById);
-router.put('/buyers/:id', buyerController.updateBuyer);
-router.delete('/buyers/:id', buyerController.deleteBuyer);
+// Auth Routes
+router.post('/login/buyer', authController.loginBuyer);
+router.post('/login/seller', authController.loginSeller);
 
-// Product Routes
-router.post('/products', productController.createProduct);
+// Seller Routes (protected)
+router.post('/sellers', sellerController.createSeller); // open for registration
+router.get('/sellers', authenticate, authorizeRole('admin'), sellerController.getAllSellers);
+router.get('/sellers/:id', authenticate, authorizeRole('seller'), sellerController.getSellerById);
+router.put('/sellers/:id', authenticate, authorizeRole('seller'), sellerController.updateSeller);
+router.delete('/sellers/:id', authenticate, authorizeRole('admin'), sellerController.deleteSeller);
+
+// Buyer Routes (some open, some protected)
+router.post('/buyers', buyerController.createBuyer); // open for registration
+router.get('/buyers', authenticate, authorizeRole('admin'), buyerController.getAllBuyers);
+router.get('/buyers/:id', authenticate, authorizeRole('buyer'), buyerController.getBuyerById);
+router.put('/buyers/:id', authenticate, authorizeRole('buyer'), buyerController.updateBuyer);
+router.delete('/buyers/:id', authenticate, authorizeRole('admin'), buyerController.deleteBuyer);
+
+// Product Routes (GETs are public, others protected)
+router.post('/products', authenticate, authorizeRole('seller'), productController.createProduct);
 router.get('/products', productController.getAllProducts);
 router.get('/products/:id', productController.getProductById);
-router.put('/products/:id', productController.updateProduct);
-router.delete('/products/:id', productController.deleteProduct);
+router.put('/products/:id', authenticate, authorizeRole('seller'), productController.updateProduct);
+router.delete('/products/:id', authenticate, authorizeRole('seller'), productController.deleteProduct);
 
-// Eco Details Routes
-router.post('/eco-details', ecoDetailsController.createEcoDetails);
+// Eco Details Routes (protected)
+router.post('/eco-details', authenticate, authorizeRole('seller'), ecoDetailsController.createEcoDetails);
 router.get('/eco-details', ecoDetailsController.getAllEcoDetails);
-// router.get('/eco-details/:id', ecoDetailsController.getEcoDetailsByProductId);
-router.put('/eco-details/:id', ecoDetailsController.updateEcoDetails);
-router.delete('/eco-details/:id', ecoDetailsController.deleteEcoDetails);
+router.put('/eco-details/:id', authenticate, authorizeRole('seller'), ecoDetailsController.updateEcoDetails);
+router.delete('/eco-details/:id', authenticate, authorizeRole('seller'), ecoDetailsController.deleteEcoDetails);
 
-// Orders Routes
-router.post('/orders', orderController.createOrder);
-router.get('/orders/:id', orderController.getOrderById);
-router.put('/orders/:id', orderController.updateOrder);
-router.delete('/orders/:id', orderController.deleteOrder);
+// Orders Routes (buyer only)
+router.post('/orders', authenticate, authorizeRole('buyer'), orderController.createOrder);
+router.get('/orders/:id', authenticate, authorizeRole('buyer'), orderController.getOrderById);
+router.put('/orders/:id', authenticate, authorizeRole('buyer'), orderController.updateOrder);
+router.delete('/orders/:id', authenticate, authorizeRole('buyer'), orderController.deleteOrder);
 
-// Order Items Routes
-router.post('/order-items', orderItemsController.createOrderItem);
-router.get('/order-items/:id', orderItemsController.getOrderItemById);
-router.put('/order-items/:id', orderItemsController.updateOrderItem);
-router.delete('/order-items/:id', orderItemsController.deleteOrderItem);
+// Order Items Routes (buyer only)
+router.post('/order-items', authenticate, authorizeRole('buyer'), orderItemsController.createOrderItem);
+router.get('/order-items/:id', authenticate, authorizeRole('buyer'), orderItemsController.getOrderItemById);
+router.put('/order-items/:id', authenticate, authorizeRole('buyer'), orderItemsController.updateOrderItem);
+router.delete('/order-items/:id', authenticate, authorizeRole('buyer'), orderItemsController.deleteOrderItem);
 
-// Rewards Routes
-router.get('/rewards/:id', rewardController.getRewardByBuyerId);
-router.put('/rewards/:id', rewardController.updateReward);
-router.delete('/rewards/:id', rewardController.deleteReward);
+// Rewards Routes (buyer only)
+router.get('/rewards/:id', authenticate, authorizeRole('buyer'), rewardController.getRewardByBuyerId);
+router.put('/rewards/:id', authenticate, authorizeRole('buyer'), rewardController.updateReward);
+router.delete('/rewards/:id', authenticate, authorizeRole('buyer'), rewardController.deleteReward);
 
 module.exports = router;

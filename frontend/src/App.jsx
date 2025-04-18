@@ -1,10 +1,14 @@
+import CreateProductForm from "../components/CreateProductForm";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import AuthPage from '../src/pages/AuthPages';
+
 function App() {
-  
+  const sellerId = 1;
   return (
     <>
-      <div>
-        <h1 className="text-red-500">Hello</h1>
-      </div>
+      <Routes>
+        <Route path="/login" element={<AuthPage />} />
+      </Routes>
     </>
   );
 }
