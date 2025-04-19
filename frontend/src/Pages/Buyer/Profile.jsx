@@ -141,97 +141,153 @@ const Profile = () => {
           </div>
         )}
 
-        {/* Rewards Section */}
-        {activeSection === "ecoRewards" && (
-          <div className="bg-white shadow p-6 rounded-md">
-            <h3 className="text-2xl font-bold mb-6">My Rewards</h3>
+{activeSection === "ecoRewards" && (
+  <div className="bg-white shadow p-6 rounded-md mb-8">
+    <h3 className="text-2xl font-bold mb-6">My Rewards</h3>
 
-            {/* Sample list of purchased products with tags */}
-            {(() => {
-              const purchasedProducts = [
-                { name: "Bamboo Toothbrush", tags: ["eco-friendly", "biodegradable"] },
-                { name: "Reusable Cotton Bag", tags: ["recyclable", "plastic-free"] },
-                { name: "Eco Water Bottle", tags: ["eco-friendly", "low carbon footprint"] },
-              ];
+    {/* Rewards Sections */}
+    {(() => {
+      // Define the 5 sections based on product tags
+      const rewardSections = [
+        {
+          name: "Eco-Friendly",
+          tag: "eco-friendly",
+          items: [
+            { name: "Bamboo Toothbrush", tags: ["eco-friendly", "biodegradable"] },
+            { name: "Reusable Water Bottle", tags: ["eco-friendly", "recyclable"] },
+          ],
+        },
+        {
+          name: "Plastic-Free",
+          tag: "plastic-free",
+          items: [
+            { name: "Cotton Bag", tags: ["plastic-free", "recyclable"] },
+            { name: "Glass Straws", tags: ["plastic-free", "eco-friendly"] },
+          ],
+        },
+        {
+          name: "Low Carbon Footprint",
+          tag: "low carbon footprint",
+          items: [
+            { name: "Solar Lamp", tags: ["low carbon footprint", "eco-friendly"] },
+            { name: "Electric Car Charger", tags: ["low carbon footprint"] },
+          ],
+        },
+        {
+          name: "Biodegradable",
+          tag: "biodegradable",
+          items: [
+            { name: "Biodegradable Plates", tags: ["biodegradable", "eco-friendly"] },
+            { name: "Compostable Bags", tags: ["biodegradable", "plastic-free"] },
+          ],
+        },
+        {
+          name: "Recycled",
+          tag: "recyclable",
+          items: [
+            { name: "Recycled Paper Notebook", tags: ["recyclable", "eco-friendly"] },
+            { name: "Recycled Plastic Water Bottle", tags: ["recyclable", "eco-friendly"] },
+          ],
+        },
+      ];
 
-              // Count points based on product tags
-              const points = purchasedProducts.reduce((totalPoints, product) => {
-                totalPoints += product.tags.length;
-                return totalPoints;
-              }, 0);
+      // Calculate points based on tags
+      const calculatePoints = (section) => {
+        return section.items.reduce((total, product) => {
+          // Count points for the matching tag in each product
+          if (product.tags.includes(section.tag)) {
+            total += 1; // Each product tag adds 1 point
+          }
+          return total;
+        }, 0);
+      };
 
-              const rewardThresholds = [10, 20, 30];
-              const nextRewardThreshold = rewardThresholds.find(
-                (threshold) => points < threshold
-              ) || rewardThresholds[rewardThresholds.length - 1];
+      return (
+        <div>
+          {rewardSections.map((section) => {
+            const points = calculatePoints(section);
+            return (
+              <div key={section.name} className="mb-8">
+                <h4 className="text-xl font-semibold">{section.name} Products</h4>
+                <p>Your Points: {points}</p>
 
-              return (
-                <div>
-                  <p className="text-lg font-medium mb-4">Your Points: {points}</p>
-                  <div className="mb-4">
-                    <div className="relative pt-1">
-                      <div className="flex mb-2 items-center justify-between">
-                        <div>
-                          <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-pink-600 bg-pink-200">
-                            Progress
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-pink-600 bg-pink-200">
-                            {points} / {nextRewardThreshold} points
-                          </span>
-                        </div>
+                {/* Progress Bar */}
+                <div className="mb-4">
+                  <div className="relative pt-1">
+                    <div className="flex mb-2 items-center justify-between">
+                      <div>
+                        <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-pink-600 bg-pink-200">
+                          Progress
+                        </span>
                       </div>
-                      <div className="flex mb-2">
-                        <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2">
-                          <div
-                            className="bg-pink-500 h-2.5 rounded-full"
-                            style={{ width: `${(points / nextRewardThreshold) * 100}%` }}
-                          />
-                        </div>
+                      <div>
+                        <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-pink-600 bg-pink-200">
+                          {points} / 50 points
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex mb-2">
+                      <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2">
+                        <div
+                          className="bg-pink-500 h-2.5 rounded-full"
+                          style={{
+                            width: `${(points / 10) * 100}%`,
+                          }}
+                        />
                       </div>
                     </div>
                   </div>
-
-                  {points >= nextRewardThreshold ? (
-                    <div className="mt-4 p-4 bg-green-100 text-green-800 rounded-md">
-                      🎉 Congratulations! You have unlocked a reward at {nextRewardThreshold} points! 🎁
-                    </div>
-                  ) : (
-                    <div className="mt-4 p-4 bg-yellow-100 text-yellow-800 rounded-md">
-                      Keep going! You need {nextRewardThreshold - points} more points to unlock your next reward.
-                    </div>
-                  )}
                 </div>
-              );
-            })()}
-          </div>
-        )}
+
+                {/* Reward Status */}
+                {points >= 10 ? (
+                  <div className="mt-4 p-4 bg-green-100 text-green-800 rounded-md">
+                    🎉 Congratulations! You have unlocked a reward in the {section.name} section! 🎁
+                  </div>
+                ) : (
+                  <div className="mt-4 p-4 bg-yellow-100 text-yellow-800 rounded-md">
+                    Keep going! You need {50 - points} more points to unlock your next reward in the {section.name} section.
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      );
+    })()}
+  </div>
+)}
+
 
         {/* Wishlist Section */}
-        {activeSection === "wishlist" && (
-          <div className="bg-white shadow p-6 rounded-md">
-            <h3 className="text-2xl font-bold mb-6">My Wishlist</h3>
+{activeSection === "wishlist" && (
+  <div className="bg-white shadow p-6 rounded-md">
+    <h3 className="text-2xl font-bold mb-6">My Wishlist</h3>
 
-            {/* Sample wishlist items */}
-            {[{ id: 1, name: "Bamboo Toothbrush", image: "https://via.placeholder.com/100", price: "$3.99" },
-              { id: 2, name: "Reusable Cotton Bag", image: "https://via.placeholder.com/100", price: "$6.49" }]
-              .map((item) => (
-                <div key={item.id} className="flex items-center justify-between border-b py-4">
-                  <div className="flex items-center space-x-4">
-                    <img src={item.image} alt={item.name} className="w-16 h-16 rounded object-cover" />
-                    <div>
-                      <p className="font-medium">{item.name}</p>
-                      <p className="text-sm text-gray-500">{item.price}</p>
-                    </div>
-                  </div>
-                  <button className="text-red-500 hover:text-red-700 text-sm font-medium">
-                    Remove
-                  </button>
-                </div>
-              ))}
+    {/* Sample wishlist items */}
+    {[
+      { id: 1, name: "Bamboo Toothbrush", image: "https://via.placeholder.com/100", price: "$3.99" },
+      { id: 2, name: "Reusable Cotton Bag", image: "https://via.placeholder.com/100", price: "$6.49" },
+    ].map((item) => (
+      <div key={item.id} className="flex items-center justify-between border-b py-4">
+        <div className="flex items-center space-x-4">
+          <img src={item.image} alt={item.name} className="w-16 h-16 rounded object-cover" />
+          <div>
+            <p className="font-medium">{item.name}</p>
+            <p className="text-sm text-gray-500">{item.price}</p>
           </div>
-        )}
+        </div>
+        <button
+          onClick={() => handleRemoveItem(item.id)} // Handle removing the item
+          className="text-red-500 hover:text-red-700 text-sm font-medium"
+        >
+          Remove
+        </button>
+      </div>
+    ))}
+  </div>
+)}
+
 
         {/* Delete Account */}
         {activeSection === "delete" && (
