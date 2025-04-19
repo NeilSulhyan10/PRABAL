@@ -1,5 +1,7 @@
 require('dotenv').config();
+require('dotenv').config();
 const express = require('express');
+const cors = require('cors'); // ✅ import cors
 const cors = require('cors'); // ✅ import cors
 const routes = require('./routes/index');
 

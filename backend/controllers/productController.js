@@ -113,6 +113,7 @@ exports.createProduct = async (req, res) => {
 };
 
 
+// Get all products
 exports.getAllProducts = (req, res) => {
   db.query("SELECT * FROM products", (err, results) => {
     if (err) return res.status(500).send(err);
@@ -120,6 +121,7 @@ exports.getAllProducts = (req, res) => {
   });
 };
 
+// Get product by ID
 exports.getProductById = (req, res) => {
   const { id } = req.params;
   db.query(
@@ -132,6 +134,7 @@ exports.getProductById = (req, res) => {
   );
 };
 
+// Update product
 exports.updateProduct = (req, res) => {
   const { id } = req.params;
   const data = req.body;
@@ -141,6 +144,7 @@ exports.updateProduct = (req, res) => {
   });
 };
 
+// Delete product
 exports.deleteProduct = (req, res) => {
   const { id } = req.params;
   db.query("DELETE FROM products WHERE product_id = ?", [id], (err) => {
