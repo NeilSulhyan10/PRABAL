@@ -13,6 +13,9 @@ const AuthPage = () => {
     role: "buyer",
     companyName: "",
     description: "",
+    buyer_phone_number: "",
+    buyer_address: "",
+    buyer_pincode: "",
   });
 
   const navigate = useNavigate();
@@ -33,6 +36,9 @@ const AuthPage = () => {
         buyer_name: formData.name,
         buyer_email: formData.buyer_email,
         buyer_password: formData.buyer_password,
+        buyer_phone_number: formData.buyer_phone_number,
+        buyer_address: formData.buyer_address,
+        buyer_pincode: formData.buyer_pincode,
       };
     } else {
       payload = {
@@ -68,9 +74,11 @@ const AuthPage = () => {
       if (isLogin && data.token) {
         localStorage.setItem("token", data.token);
         if (role === "buyer") {
-          navigate("/dashboard/buyer");
+          localStorage.setItem("buyer_id", data.buyer_id);
+          navigate("/");
         } else {
-          navigate("/home");
+          localStorage.setItem("seller_id", data.seller_id);
+          navigate("/seller/dashboard");
         }
       } else if (!isLogin && (data.buyer_id || data.seller_id)) {
         alert("Account created successfully. Please log in.");
@@ -143,6 +151,38 @@ const AuthPage = () => {
               <textarea
                 name="description"
                 placeholder="Company Description"
+                className="w-full rounded-lg border border-gray-300 p-2"
+                onChange={handleChange}
+                required
+              />
+            </>
+          )}
+
+          {/* Buyer-specific fields */}
+          {!isLogin && formData.role === "buyer" && (
+            <>
+              <input
+                type="text"
+                name="buyer_phone_number"
+                placeholder="Phone Number"
+                className="w-full rounded-lg border border-gray-300 p-2"
+                onChange={handleChange}
+                required
+              />
+
+              <input
+                type="text"
+                name="buyer_address"
+                placeholder="Address"
+                className="w-full rounded-lg border border-gray-300 p-2"
+                onChange={handleChange}
+                required
+              />
+
+              <input
+                type="text"
+                name="buyer_pincode"
+                placeholder="Pincode"
                 className="w-full rounded-lg border border-gray-300 p-2"
                 onChange={handleChange}
                 required
